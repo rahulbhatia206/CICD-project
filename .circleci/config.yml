@@ -49,15 +49,15 @@ jobs:
           keys: [frontend-test]
       # Test job code
       - run:
-        command: |
-          cd frontend
-          pwd
-          npm i
-          npm build
-          npm run test
+          command: |
+            cd frontend
+            pwd
+            npm i
+            npm build
+            npm run test
       - save_cache:
-        paths: [backend/node_modules]
-        key: frontend-test
+          paths: [backend/node_modules]
+          key: frontend-test
                 
   test-backend:
     docker:
@@ -70,15 +70,15 @@ jobs:
           keys: [backend-test]
       # Test job code
       - run:
-        command: |
-          cd backend
-          pwd
-          npm i
-          npm build
-          npm run test
+          command: |
+            cd backend
+            pwd
+            npm i
+            npm build
+            npm run test
       - save_cache:
-        paths: [backend/node_modules]
-        key: backend-test
+          paths: [backend/node_modules]
+          key: backend-test
 
 workflows:
   default:
