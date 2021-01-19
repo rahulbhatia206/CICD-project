@@ -48,13 +48,13 @@ jobs:
       - restore_cache:
           keys: [frontend-build]
       # Test job code
-        - run:
-          command: |
-            cd frontend
-            pwd
-            npm i
-            npm build
-            npm run test
+      - run:
+        command: |
+          cd frontend
+          pwd
+          npm i
+          npm build
+          npm run test
                 
   test-backend:
     docker:
