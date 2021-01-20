@@ -116,7 +116,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      -image: amazon/aws-cli
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
@@ -151,16 +151,16 @@ jobs:
   configure-infrastructure:
     docker:
       # Docker image here that supports Ansible
-      image: alpine:latest
+      - image: alpine:latest
     steps:
-      -checkout
+      - checkout
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
       # attach workspace
       - attach_workspace:
           at: ~/
-          
+
       - run:
           name: Install dependencies
           command: |
