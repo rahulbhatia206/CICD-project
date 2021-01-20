@@ -49,9 +49,9 @@ jobs:
           keys: [frontend-build]
       # Test job code
       - run:
+          name: Front-end test
           command: |
             cd frontend
-            pwd
             npm i
             npm build
             npm run test
@@ -70,15 +70,47 @@ jobs:
           keys: [backend-build]
       # Test job code
       - run:
+          name: Back-end test
           command: |
             cd backend
-            pwd
             npm i
             npm build
             npm run test
       - save_cache:
           paths: [backend/node_modules]
           key: backend-test
+
+### Analyse Phase###
+
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      # Restore from cache
+      - restore_cache:
+          keys: [frontend-test]
+      # Test job code
+      - run:
+          name: Front-end scan
+          command: |
+            cd frontend
+            npm audit --audit-level=critical
+
+  scan-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      # Restore from cache
+      - restore_cache:
+          keys: [backend-test]
+      # Test job code
+      - run:
+          name: Back-end scan
+          command: |
+            cd backend
+            npm audit --audit-level=critical
 
 workflows:
   default:
@@ -89,3 +121,7 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
+      - scan-frontend:
+        requires: [test-frontend]
+      - scan-backend:
+          requires: [test-backend]
