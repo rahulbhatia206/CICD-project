@@ -1,0 +1,14 @@
+RDS
+db name: mypgsqldatabase
+hostname: mypgsqldatabase.c1jztk63xpkc.eu-west-1.rds.amazonaws.com
+
+
+S3:
+udapeople-0qgpusgewr
+
+
+aws cloudformation create-stack --stack-name cloudfrontstarter --template-body file://cloudfront.yml --parameters ParameterKey=WorkflowID,ParameterValue="0qgpusgewr"
+
+
+ssh fingerprint:
+da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99

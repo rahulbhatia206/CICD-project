@@ -112,6 +112,69 @@ jobs:
             cd backend
             npm audit fix --audit-level=critical --force
 
+### Infrastructure Phase###
+
+  deploy-infrastructure:
+    docker:
+      -image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Ensure back-end infrastructure exists
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+
+      - run:
+          name: Ensure front-end infrastructure exist
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              --tags project=udapeople \
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --output text >> project/.circleci/ansible/inventory.txt
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure
+
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      image: alpine:latest
+    steps:
+      -checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
+      # attach workspace
+      - attach_workspace:
+          at: ~/
+          
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible && apk add openssh
+      - run:
+          name: Configure server
+          command: |
+            ansible-playbook -i ~/inventory.txt ~/project/.circleci/ansible/configure-server.yml
+      
+            # Here's where you will add some code to rollback on failure 
+
+
+
+
 workflows:
   default:
     jobs:
