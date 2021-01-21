@@ -215,7 +215,7 @@ jobs:
             yum -y install nodejs
             yum -y install tar gzip
       - attach_workspace:
-        at: ~/
+          at: ~/
       - run:
           name: Get backend url
           command: |
@@ -241,10 +241,10 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-        fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
+          fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
 
       - attach_workspace:
-        at: ~/
+          at: ~/
       - run:
           name: Install dependencies
           command: |
