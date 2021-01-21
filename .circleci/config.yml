@@ -183,12 +183,14 @@ jobs:
       # Docker image here that supports NodeJS
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
             cd backend
-            npm install
-            npm audit fix --audit-level=critical --force
+            # npm install
+            # npm audit fix --audit-level=critical --force
             npm run migrations > migrations.txt
             cat migrations.txt
             migration_status=$(cat migrations.txt | grep -c "has been executed successfully")
