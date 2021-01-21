@@ -202,6 +202,8 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+      - attach_workspace:
+        at: ~/
       - checkout
       - run:
           name: Install dependencies
@@ -213,19 +215,21 @@ jobs:
           name: Get backend url
           command: |
             # your code here
+            export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
           name: Deploy frontend objects
           command: |
-            # your code here
+            cd frontend
+            npm run build
       # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
     docker:
       - image: alpine:latest
-      - checkout
     steps:
+      - checkout
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
