@@ -172,10 +172,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-        name: Ensure inventory loaded
-        command: |
-          ls ~/
-          cat .circleci/ansible/inventory.txt
+          name: Ensure inventory loaded
+          command: |
+            ls ~/
+            cat .circleci/ansible/inventory.txt
       - run:
           name: Install dependencies
           command: |
