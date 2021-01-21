@@ -205,8 +205,6 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - attach_workspace:
-        at: ~/
       - checkout
       - run:
           name: Install dependencies
@@ -214,6 +212,8 @@ jobs:
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
             yum -y install nodejs
             yum -y install tar gzip
+      - attach_workspace:
+        at: ~/
       - run:
           name: Get backend url
           command: |
@@ -227,6 +227,10 @@ jobs:
             cd frontend
             npm run build
             aws s3 cp --recursive frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>"
+      - run:
+          name: Echo S3 location (front-end)
+          command: |
+            echo "s3://udapeople-<< pipeline.parameters.workflow-id >>"
       # Here's where you will add some code to rollback on failure      
                     
   deploy-backend:
