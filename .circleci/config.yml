@@ -125,8 +125,8 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
       - run:
           name: Ensure front-end infrastructure exist
@@ -134,8 +134,8 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople \
-              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID}"  
+              --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -172,7 +172,31 @@ jobs:
       
             # Here's where you will add some code to rollback on failure 
 
-
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+      # Docker image here that supports NodeJS
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            cd backend
+            npm install
+            npm run migrations > migrations.txt
+            cat migrations.txt
+            migration_status=$(cat migrations.txt | grep -c "has been executed successfully")
+            if [ $migration_status = 1 ]; 
+            then exit 0; 
+            else exit 1; 
+            fi;
+      - run:
+          name: Send migration results to memstash
+          command: |
+            curl -H "Content-Type: text/plain" -H "token: 2b869a61-8264-4f15-bf8b-f9174cfc9efc" \
+            --request PUT --data "1" \
+            https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
+     # Here's where you will add some code to rollback on failure   
 
 
 workflows:
@@ -192,3 +216,7 @@ workflows:
           requires: [scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
