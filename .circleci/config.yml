@@ -119,6 +119,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install -y tar
+      - run: yum install -y gzip
       - attach_workspace:
           at: ~/
       - run:
@@ -238,9 +240,11 @@ jobs:
       - image: alpine:latest
     steps:
       - checkout
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - add_ssh_keys:
+        fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
+
+      - attach_workspace:
+        at: ~/
       - run:
           name: Install dependencies
           command: |
