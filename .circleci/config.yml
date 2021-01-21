@@ -150,7 +150,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - .circleci/ansible/inventory.txt
+            - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
@@ -248,7 +248,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update ansible && apk add openssh && apk add --update nodejs npm
       - run:
           name: Deploy backend
           command: |
