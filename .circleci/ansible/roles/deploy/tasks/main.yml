@@ -1,0 +1,30 @@
+- name: Copy backend code to remote server
+  become: true
+  copy:
+      src: /root/project/backend
+      dest: /home/ubuntu
+
+- name: Install Node modules
+  become: true
+  shell: |
+      cd /home/ubuntu/backend
+      ls -la
+      printenv
+      npm install
+- name: building node services
+  become: true
+  shell: |
+      cd /home/ubuntu/backend
+      npm run build
+      npm run prestart:prod
+- name: Run migrations
+  become: true
+  shell: |
+      cd /home/ubuntu/backend
+      npm run migrations
+- name: Executing node
+  become: true
+  shell: |
+      cd /home/ubuntu/backend 
+      pm2 start npm --name backend -- start
+      pm2 ls
