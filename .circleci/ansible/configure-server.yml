@@ -18,9 +18,9 @@
     - TYPEORM_DATABASE: "{{ lookup('env','TYPEORM_DATABASE') }}"
 
   pre_tasks:
-    - name: "wait 600 seconds for target connection to become reachable/usable."
+    - name: "wait 60 seconds for target connection to become reachable/usable."
       wait_for_connection:
-        timeout: 600
+        timeout: 60
 
     - name: "install python for Ansible."
       become: true
@@ -29,5 +29,6 @@
 
     - setup:
   roles:
-    - configure-prometheus-node-exporter
     - configure-server
+    - configure-prometheus-node-exporter
+    
