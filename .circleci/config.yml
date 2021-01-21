@@ -147,10 +147,16 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> .circleci/ansible/inventory.txt
+
+      - run:
+          name: Ensure inventory saved
+          command: |
+            ls ~/
+            cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
-            - project/.circleci/ansible/inventory.txt
+            - .circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
 
   configure-infrastructure:
@@ -165,7 +171,11 @@ jobs:
       # attach workspace
       - attach_workspace:
           at: ~/
-
+      - run:
+        name: Ensure inventory loaded
+        command: |
+          ls ~/
+          cat .circleci/ansible/inventory.txt
       - run:
           name: Install dependencies
           command: |
