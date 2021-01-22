@@ -20,13 +20,10 @@ commands:
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    parameters:
-      # Add parameter here     
     steps:
       - run:
           name: Revert migrations
           when: on_fail
-          # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             export SUCCESS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
@@ -301,7 +298,9 @@ jobs:
           name: Echo S3 location (front-end)
           command: |
             echo "s3://udapeople-<< pipeline.parameters.workflow-id >>"
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations      
                     
   deploy-backend:
     docker:
@@ -323,7 +322,9 @@ jobs:
               export ANSIBLE_HOST_KEY_CHECKING=False
               ansible-playbook -i .circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml
-      # Here's where you will add some code to rollback on failure 
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations
 
   smoke-test:
     docker:
@@ -355,7 +356,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-eu-west-1.amazonaws.com"
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-eu-west-1.amazonaws.com"
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
@@ -363,7 +364,9 @@ jobs:
             else
               return 0
             fi
-      # Here's where you will add some code to rollback on failure  
+          - destroy-environment:
+              workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+          - revert-migrations
 
   cloudfront-update:
     docker:
@@ -392,9 +395,10 @@ jobs:
               --stack-name "udapeople-cloudfront" \
               --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
               --tags project=udapeople
-
-
-      # Here's where you will add some code to rollback on failure  
+              
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations 
 
 cleanup:
     docker:
