@@ -254,7 +254,7 @@ jobs:
       - run:
           name: Send migration results to memstash
           command: |
-            curl -H "Content-Type: text/plain" -H "token: 2b869a61-8264-4f15-bf8b-f9174cfc9efc" --request PUT --data "1" \
+            curl -H "Content-Type: text/plain" -H "token: gajdulj" --request PUT --data "1" \
              https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
      # Here's where you will add some code to rollback on failure   
 
@@ -354,6 +354,7 @@ jobs:
 
   cloudfront-update:
     docker:
+      - image: amazon/aws-cli
       # Docker image here that supports AWS CLI
     steps:
       # Checkout code from git
