@@ -198,16 +198,16 @@ jobs:
       # Docker image here that supports NodeJS
     steps:
       - checkout
-      - restore_cache:
-          keys: [backend-build]
       - run:
           name: Run migrations
           no_output_timeout: 10m
           command: |
+            npm install -g tsc && npm install -g concurrently && npm install -g typescript
             cd backend
-            # npm install
-            # npm audit fix --audit-level=critical --force
-            sudo npm run migrations > migrations.txt
+            npm install
+            npm i 
+            npm audit fix --audit-level=critical --force
+            npm run migrations > migrations.txt
             cat migrations.txt
             migration_status=$(cat migrations.txt | grep -c "has been executed successfully")
             if [ $migration_status = 1 ]; 
