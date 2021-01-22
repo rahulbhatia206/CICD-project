@@ -193,8 +193,7 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
 
   configure-infrastructure:
     docker:
@@ -240,8 +239,7 @@ jobs:
             ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ~/project/.circleci/ansible/inventory.txt ~/project/.circleci/ansible/configure-server.yml
       
             # Here's where you will add some code to rollback on failure 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
 
   run-migrations:
     docker:
@@ -296,8 +294,7 @@ jobs:
           name: Echo S3 location (front-end)
           command: |
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
       - revert-migrations      
                     
   deploy-backend:
@@ -320,8 +317,7 @@ jobs:
               export ANSIBLE_HOST_KEY_CHECKING=False
               ansible-playbook -i .circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
       - revert-migrations
 
   smoke-test:
@@ -362,8 +358,7 @@ jobs:
             else
               return 0
             fi
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
       - revert-migrations
 
   cloudfront-update:
@@ -394,8 +389,7 @@ jobs:
               --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
               --tags project=udapeople
 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
       - revert-migrations 
 
 cleanup:
@@ -436,8 +430,7 @@ cleanup:
                   else
                       echo "This must be the first run, no old workflow id."  
                 fi
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment
       - revert-migrations
 workflows:
   default:
