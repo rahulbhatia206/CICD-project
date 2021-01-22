@@ -203,8 +203,8 @@ jobs:
           # no_output_timeout: 10m
           command: |
             cd backend
-            sudo npm install -g tsc concurrently typescript
-            npm audit fix --audit-level=critical --force
+            sudo npm install
+            sudo npm audit fix --audit-level=critical --force
             echo "running migrations"
             sudo npm run migrations > migrations.txt
             cat migrations.txt
