@@ -256,11 +256,6 @@ jobs:
             echo "running migrations"
             npm run migrations > migrations.txt
             cat migrations.txt
-            migration_status=$(cat migrations.txt | grep -c "has been executed successfully")
-            if [ $migration_status = 1 ]; 
-            then exit 0; 
-            else exit 1; 
-            fi;
       - run:
           name: Send migration results to memstash
           command: |
@@ -292,6 +287,7 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
+            npm install
             npm run build
             aws s3 cp --recursive frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>"
       - run:
@@ -460,3 +456,13 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
+      - cleanup:
+          requires: [cloudfront-update]
