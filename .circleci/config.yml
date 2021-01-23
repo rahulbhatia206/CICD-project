@@ -351,15 +351,20 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
+            BACKEND_IP=$(aws cloudformation \
+            list-exports --query "Exports[?Name==\`backendIP\`].Value" \
+            --no-paginate --output text)
+            echo $BACKEND_IP
+            
       - run:
           name: Backend smoke test.
           command: |
-            if curl -s https://${BACKEND_URL}:3030/api/status
+            # if curl -s https://${BACKEND_IP}:3030/api/status
+            if curl -vvv $BACKEND_IP
             then
-              return 1
-            else
               return 0
+            else
+              return 1
             fi
       - run:
           name: Frontend smoke test.
@@ -368,9 +373,9 @@ jobs:
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
-              return 1
-            else
               return 0
+            else
+              return 1
             fi
       - destroy-environment
       - revert-migrations
