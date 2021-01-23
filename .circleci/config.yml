@@ -329,7 +329,7 @@ jobs:
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> $envfile
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> $envfile
             tar -cvf backend.tar backend
-            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.txt .circleci/ansible/deploy-backend.yml
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       # Here's where you will add some code to rollback on failure
       #- destroy-environment
       #- revert-migrations
@@ -463,19 +463,19 @@ workflows:
           #requires: [test-frontend]
       # - scan-backend:
           #requires: [test-backend]
-      - deploy-infrastructure 
-          #requires: [scan-backend]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - deploy-infrastructure 
+      #     #requires: [scan-backend]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+       - deploy-backend
+      #     requires: [deploy-frontend]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
