@@ -306,11 +306,12 @@ jobs:
           fingerprints: ["da:95:0f:a4:4a:71:0e:d4:f4:33:89:5b:24:57:76:99"]
 
       - attach_workspace:
-          at: ~/
+          at: .
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible curl rsync nodejs npm openssh
+            apk add --update ansible tar gzip ansible nodejs npm
+
       - run:
           name: Generate artifact
           command: |
@@ -323,9 +324,11 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-              export ANSIBLE_HOST_KEY_CHECKING=False
-              ansible-playbook -i .circleci/ansible/inventory.txt \
-              .circleci/ansible/deploy-backend.yml
+            [[ ! -d backend ]] && mkdir backend
+            envfile="backend/.env"          
+            tar -cvf backend.tar backend
+            ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt \
+            .circleci/ansible/deploy-backend.yml
       - run:
           name: Install AWS CLI for rollback
           when: on_fail
