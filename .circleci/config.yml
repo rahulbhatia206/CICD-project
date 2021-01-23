@@ -14,9 +14,9 @@ commands:
                 command: |
                     aws s3 rb s3://udapeople-<< parameters.workflow_id >> --force  
                     aws cloudformation delete-stack \
-                        --stack-name "backend-stack-<< parameters.workflow_id >>"
+                        --stack-name "udapeople-backend-<< parameters.workflow_id >>"
                     aws cloudformation delete-stack \
-                        --stack-name "frontend-stack-<< parameters.workflow_id >>"
+                        --stack-name "udapeople-frontend-<< parameters.workflow_id >>"
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -299,7 +299,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: alpine:latest
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - add_ssh_keys:
@@ -311,6 +311,15 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible && apk add openssh && apk add --update nodejs npm
+      - run:
+          name: Generate artifact
+          command: |
+            cd backend
+            npm i
+            npm run build
+            tar -czvf /etc/artifact.tar.gz ./
+            chmod 644 /etc/artifact.tar.gz
+
       - run:
           name: Deploy backend
           command: |
