@@ -316,6 +316,7 @@ jobs:
       - run:
           name: Deploy backend
           command: |
+            echo "52.17.186.62" >> .circleci/ansible/inventory.txt
             [[ ! -d backend ]] && mkdir backend
             envfile="backend/.env"
             echo ENVIROMENT=production > $envfile
@@ -359,7 +360,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl -vvv "http://$BACKEND_IP:3030/api/status"
+            if curl -vvv "http://${BACKEND_IP}:3030/api/status"
             then
               return 0
             else
@@ -473,7 +474,8 @@ workflows:
       #     requires: [run-migrations]
        - deploy-backend
       #     requires: [deploy-frontend]
-      # - smoke-test:
+       - smoke-test:
+            requires: [deploy-backend]
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
