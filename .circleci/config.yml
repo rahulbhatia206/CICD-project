@@ -310,7 +310,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible && apk add openssh && apk add --update nodejs npm
+            apk add --update ansible curl rsync nodejs npm openssh
       - run:
           name: Generate artifact
           command: |
@@ -331,8 +331,8 @@ jobs:
           when: on_fail
           command: |
               apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
-      - destroy-environment
-      - revert-migrations
+      #- destroy-environment
+      #- revert-migrations
 
   smoke-test:
     docker:
@@ -377,8 +377,8 @@ jobs:
             else
               return 1
             fi
-      - destroy-environment
-      - revert-migrations
+      #- destroy-environment
+      #- revert-migrations
 
   cloudfront-update:
     docker:
