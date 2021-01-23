@@ -32,4 +32,5 @@
   become: yes
   shell: |
     cd ~/app/backend
+    npm i
     pm2 start npm --name backend -- start
