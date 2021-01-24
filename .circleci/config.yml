@@ -351,8 +351,8 @@ jobs:
             tar -cvf backend.tar backend
             ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/deploy-backend.yml
       # Here's where you will add some code to rollback on failure
-      #- destroy-environment
-      #- revert-migrations
+      - destroy-environment
+      - revert-migrations
 
   smoke-test:
     docker:
@@ -377,8 +377,9 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl -vvv "http://$BACKEND_IP:3030/api/status"
+            if curl "http://$BACKEND_IP:3030/api/status"
             then
+              echo "Connection established"
               return 0
             else
               return 1
@@ -390,12 +391,12 @@ jobs:
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
-              return 0
+              return 1
             else
               return 1
             fi
-      #- destroy-environment
-      #- revert-migrations
+      - destroy-environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
