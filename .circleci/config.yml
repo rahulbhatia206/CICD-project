@@ -182,6 +182,7 @@ jobs:
             aws cloudformation \
                 list-exports --query "Exports[?Name==\`backendIP\`].Value" \
                 --no-paginate --output text >> .circleci/ansible/inventory.txt
+            
 
       - run:
           name: Ensure inventory saved
@@ -477,7 +478,7 @@ workflows:
           #requires: [test-backend]
        - deploy-infrastructure 
            #requires: [scan-backend]
-      # - configure-infrastructure:
+       - configure-infrastructure
       #     requires: [deploy-infrastructure]
       # - run-migrations:
       #    requires: [configure-infrastructure]
