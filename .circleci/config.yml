@@ -373,17 +373,14 @@ jobs:
           command: |
             export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
             https://api.memstash.io/values/targetip)
+            echo $BACKEND_IP
             
       - run:
           name: Backend smoke test.
           command: |
-            if curl "http://${BACKEND_IP}:3030/api/status"
-            then
-              echo "Connection established"
-              return 0
-            else
-              return 1
-            fi
+            echo "http://$BACKEND_IP:3030/api/status"
+            curl -vvv "http://$BACKEND_IP:3030/api/status"
+
       - run:
           name: Frontend smoke test.
           command: |
