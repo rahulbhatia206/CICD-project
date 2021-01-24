@@ -6,7 +6,7 @@
     update_cache: yes
 
 - name: "install pm2"
-  become: trues
+  become: true
   npm:
     name: pm2
     global: yes
