@@ -265,15 +265,17 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            yum -y install nodejs
-            yum -y install tar gzip
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install python3
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - attach_workspace:
           at: ~/
       - run:
@@ -290,6 +292,13 @@ jobs:
             npm install
             npm run build
             aws s3 sync dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
+            TYPEORM_CONNECTION: $TYPEORM_CONNECTION
+            TYPEORM_HOST: $TYPEORM_HOST
+            TYPEORM_USERNAME: $TYPEORM_USERNAME
+            TYPEORM_PASSWORD: $TYPEORM_PASSWORD
+            TYPEORM_DATABASE: $TYPEORM_DATABASE
+            TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
+            TYPEORM_ENTITIES: $TYPEORM_ENTITIES
       - run:
           name: Echo S3 location (front-end)
           command: |
