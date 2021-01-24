@@ -182,7 +182,13 @@ jobs:
             aws cloudformation \
                 list-exports --query "Exports[?Name==\`backendIP\`].Value" \
                 --no-paginate --output text >> .circleci/ansible/inventory.txt
-            
+
+                backendip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+
+                curl -H "Content-Type: text/plain" \
+                -H "token: gajdulj" \
+                --request PUT --data "$backendip" \
+                https://api.memstash.io/values/targetip
 
       - run:
           name: Ensure inventory saved
@@ -282,9 +288,8 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            ls -latr
-            cat .circleci/ansible/inventory.txt
-            export BACKEND_IP=$(sed -n 2p .circleci/ansible/inventory.txt)
+            export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
+            https://api.memstash.io/values/targetip)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
@@ -328,7 +333,12 @@ jobs:
       - run:
           name: Deploy backend
           command: |
-            echo "34.240.119.208" >> .circleci/ansible/inventory.txt
+            export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
+            https://api.memstash.io/values/targetip)
+
+            echo $BACKEND_IP"
+            echo "$BACKEND_IP" >> .circleci/ansible/inventory.txt
+            cat .circleci/ansible/inventory.txt
             [[ ! -d backend ]] && mkdir backend
             envfile="backend/.env"
             echo ENVIROMENT=production > $envfile
@@ -477,13 +487,13 @@ workflows:
       # - scan-backend:
           #requires: [test-backend]
        - deploy-infrastructure 
-           #requires: [scan-backend]
+           requires: [scan-backend]
        - configure-infrastructure:
            requires: [deploy-infrastructure]
-      # - run-migrations:
-      #    requires: [configure-infrastructure]
-      # - deploy-frontend
-      #     requires: [run-migrations]
+       - run-migrations:
+          requires: [configure-infrastructure]
+       - deploy-frontend
+           requires: [run-migrations]
       # - deploy-backend:
       #      requires: [deploy-frontend]
       # - smoke-test:
