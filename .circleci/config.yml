@@ -296,7 +296,8 @@ jobs:
             echo "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy-environment
       - revert-migrations      
-             
+
+
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
@@ -360,7 +361,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl -vvv "http://${BACKEND_IP}:3030/api/status"
+            if curl -vvv "http://$BACKEND_IP:3030/api/status"
             then
               return 0
             else
@@ -464,16 +465,16 @@ workflows:
           #requires: [test-frontend]
       # - scan-backend:
           #requires: [test-backend]
-      # - deploy-infrastructure 
-      #     #requires: [scan-backend]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-       - deploy-backend
-      #     requires: [deploy-frontend]
+       - deploy-infrastructure 
+           #requires: [scan-backend]
+       - configure-infrastructure:
+           requires: [deploy-infrastructure]
+       - run-migrations:
+           requires: [configure-infrastructure]
+       - deploy-frontend:
+           requires: [run-migrations]
+       - deploy-backend:
+           requires: [deploy-frontend]
        - smoke-test:
             requires: [deploy-backend]
       #     requires: [deploy-backend, deploy-frontend]
