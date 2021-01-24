@@ -292,20 +292,17 @@ jobs:
             https://api.memstash.io/values/targetip)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+
+            cd frontend
+            echo "${API_URL}" > apiurl.txt
       - run:
           name: Deploy frontend objects
           command: |
             cd frontend
+            export API_URL=$(cat apiurl.txt)
             npm install
             npm run build
             aws s3 sync dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
-            TYPEORM_CONNECTION: $TYPEORM_CONNECTION
-            TYPEORM_HOST: $TYPEORM_HOST
-            TYPEORM_USERNAME: $TYPEORM_USERNAME
-            TYPEORM_PASSWORD: $TYPEORM_PASSWORD
-            TYPEORM_DATABASE: $TYPEORM_DATABASE
-            TYPEORM_MIGRATIONS: $TYPEORM_MIGRATIONS
-            TYPEORM_ENTITIES: $TYPEORM_ENTITIES
       - run:
           name: Echo S3 location (front-end)
           command: |
@@ -494,8 +491,8 @@ workflows:
           requires: [configure-infrastructure]
        - deploy-frontend
            requires: [run-migrations]
-      # - deploy-backend:
-      #      requires: [deploy-frontend]
+       - deploy-backend:
+            requires: [deploy-frontend]
       # - smoke-test:
       #      requires: [deploy-backend]
       #     requires: [deploy-backend, deploy-frontend]
