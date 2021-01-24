@@ -486,13 +486,13 @@ workflows:
           #requires: [test-frontend]
       # - scan-backend:
           #requires: [test-backend]
-       - deploy-infrastructure 
-           requires: [scan-backend]
+       - deploy-infrastructure
+      #      requires: [scan-backend]
        - configure-infrastructure:
-           requires: [deploy-infrastructure]
+            requires: [deploy-infrastructure]
        - run-migrations:
-          requires: [configure-infrastructure]
-       - deploy-frontend
+            requires: [configure-infrastructure]
+       - deploy-frontend:
            requires: [run-migrations]
       # - deploy-backend:
       #      requires: [deploy-frontend]
