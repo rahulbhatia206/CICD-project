@@ -29,7 +29,9 @@ commands:
             export SUCCESS=$(curl -H "token: ${CIRCLE_WORKFLOW_ID}" --request GET https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID})
             if(( $SUCCESS==1 )); 
             then
+            echo "reverting migrations..."
             cd ~/project/backend
+            ls
             npm install
             npm run migrations:revert
             fi
@@ -384,7 +386,7 @@ jobs:
             echo $URL
             if curl -s ${URL} | grep "Welcome"
             then
-              return 1
+              return 0
             else
               return 1
             fi
@@ -487,7 +489,7 @@ workflows:
             requires: [deploy-frontend]
        - smoke-test:
             requires: [deploy-backend, deploy-frontend]
-      # - cloudfront-update:
-      #     requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+       - cloudfront-update:
+           requires: [smoke-test]
+       - cleanup:
+           requires: [cloudfront-update]
