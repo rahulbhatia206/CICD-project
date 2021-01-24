@@ -405,8 +405,8 @@ jobs:
           name: update
           command: |
             # your code here
-            ls la .
-            ls la ..
+            ls -la .
+            ls -la ..
             OLD_CIRCLE_WORKFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value" --output text)
             echo OLD_CIRCLE_WORKFLOW_ID=${OLD_CIRCLE_WORKFLOW_ID:0:7}
             STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter UPDATE_COMPLETE CREATE_COMPLETE --output text)
