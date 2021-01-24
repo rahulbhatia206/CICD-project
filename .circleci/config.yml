@@ -192,7 +192,7 @@ jobs:
                 curl -H "Content-Type: text/plain" \
                 -H "token: gajdulj" \
                 --request PUT --data "$backendip" \
-                https://api.memstash.io/values/targetip
+                https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID}
 
       - run:
           name: Ensure inventory saved
@@ -293,7 +293,7 @@ jobs:
           name: Get backend url
           command: |
             export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
-            https://api.memstash.io/values/targetip)
+            https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID})
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
 
@@ -335,7 +335,7 @@ jobs:
           name: Deploy backend
           command: |
             export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
-            https://api.memstash.io/values/targetip)
+            https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID})
 
             echo "$BACKEND_IP"
             echo "$BACKEND_IP" >> .circleci/ansible/inventory.txt
@@ -376,7 +376,7 @@ jobs:
           name: Backend smoke test.
           command: |
             export BACKEND_IP=$(curl -H "token: gajdulj" --request GET \
-            https://api.memstash.io/values/targetip)
+            https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID})
             echo $BACKEND_IP
             echo "http://$BACKEND_IP:3030/api/status"
             curl -vvv "http://$BACKEND_IP:3030/api/status"
