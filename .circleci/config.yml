@@ -377,7 +377,7 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            if curl "http://$BACKEND_IP:3030/api/status"
+            if curl "http://${BACKEND_IP}:3030/api/status"
             then
               echo "Connection established"
               return 0
