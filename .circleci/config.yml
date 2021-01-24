@@ -183,12 +183,10 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory. Getting it as an output from backend.yml script.
           command: |
-            cwid="${CIRCLE_WORKFLOW_ID:0:7}"
-            echo $cwid
-            aws ec2 describe-instances --filters 'Name=tag:project,Values=udapeopleBackend_$cwid' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text >> .circleci/ansible/inventory.txt
+            backip=$(echo "aws ec2 describe-instances --filters 'Name=tag:project,Values=udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:7}' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text")
+            echo $backip >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
-            backendip=$(aws ec2 describe-instances --filters 'Name=tag:project,Values=udapeopleBackend_$cwid' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            curl -H "Content-Type: text/plain" -H "token: gajdulj" --request PUT --data "$backendip" https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID}
+            curl -H "Content-Type: text/plain" -H "token: gajdulj" --request PUT --data "$backip" https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID}
 
       - run:
           name: Ensure inventory saved
