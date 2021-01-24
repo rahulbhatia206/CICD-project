@@ -167,7 +167,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project="udapeopleBackend${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project="udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:7}" \
               --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
@@ -176,17 +176,20 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project="udapeopleFrontend${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project="udapeopleFrontend_${CIRCLE_WORKFLOW_ID:0:7}" \
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
 
       - run:
           name: Add back-end ip to ansible inventory. Getting it as an output from backend.yml script.
           command: |
-            backip=$(echo "aws ec2 describe-instances --filters 'Name=tag:project,Values=udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:7}' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text")
-            echo $backip >> .circleci/ansible/inventory.txt
+            cwid=$(echo "aws ec2 describe-instances --filters 'Name=tag:project,Values=udapeopleBackend_${CIRCLE_WORKFLOW_ID:0:7}' --query 'Reservations[*].Instances[*].PublicIpAddress' --output text")
+            echo $cwid > backip.sh; chmod 755 backip.sh
+            ./backip.sh >> .circleci/ansible/inventory.txt
+            ./backip.sh
             cat .circleci/ansible/inventory.txt
-            curl -H "Content-Type: text/plain" -H "token: gajdulj" --request PUT --data "$backip" https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID}
+            backendip=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            curl -H "Content-Type: text/plain" -H "token: gajdulj" --request PUT --data "$backendip" https://api.memstash.io/values/ec2_back_ip_${CIRCLE_WORKFLOW_ID}
 
       - run:
           name: Ensure inventory saved
