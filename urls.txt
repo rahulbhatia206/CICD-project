@@ -1,0 +1,15 @@
+Public Url to GitHub repository (not private) [URL01]
+https://github.com/gajdulj/CICD-project
+
+Public URL for your S3 Bucket (aka, your green candidate front-end) [URL02]
+https://s3.console.aws.amazon.com/s3/buckets/udapeople-0e9f071?region=eu-west-1&tab=properties
+
+Public URL for your CloudFront distribution (aka, your blue production front-end) [URL03]
+http://d1yhypf8p90l3u.cloudfront.net/#/employees
+
+Public URLs to deployed application back-end in EC2 [URL04]
+http://54.78.36.17:3030/api/status
+
+Public URL to your Prometheus Server [URL05]
+http://ec2-34-241-45-28.eu-west-1.compute.amazonaws.com:9090/graph
+
