@@ -19,3 +19,20 @@ ip vs url
 caching only in one place
 
 Pushing al the time to test- any alternative?
+
+
+Write deploy tasks for Ansible role.
+run migrations failing- dependencies?
+
+Issues: 
+* getting 2 public ip into inventory..
+* file path to persist is not right
+
+
+ANSIBLE_HOST_KEY_CHECKING=False
+
+
+https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-configure-a-jump-host-to-access-servers-that-i-have-no-direct-access-to
+
+
+add revert migrations and destroy environment
